@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="d47a5e02-6b53-49b5-90f9-d23b9d7ac705" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="scatter-45Flow" doc:id="ed2608e8-17e0-46d2-8aef-eb5fe5825060" >
+		<http:listener doc:name="Listener" doc:id="e8fa1144-4797-4cc5-9f97-888e4299259f" config-ref="HTTP_Listener_config" path="/suresh"/>
+		<logger level="INFO" doc:name="Logger" doc:id="4e288dd8-1245-4010-9e61-3c861bfe30fa" />
+		<scatter-gather doc:name="Scatter-Gather" doc:id="0ed03ca4-f0b5-4b21-8e72-d8cb9a5aee94" >
+			<route >
+				<logger level="INFO" doc:name="Logger" doc:id="7d76d621-a8b8-4cc0-9d3c-a239040bb6ad" />
+				<http:request method="GET" doc:name="Request" doc:id="dd96b700-07ce-486d-8be7-e64c9cf8679c" url="https://fakerapi.it/api/v1/addresses"/>
+				<ee:transform doc:name="Transform Message" doc:id="92dac75c-85c6-4818-ad5d-2ff10f03fbb3">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload ]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</route>
+			<route >
+				<logger level="INFO" doc:name="Logger" doc:id="5ef44ef0-783a-4a41-ade3-60b84f0befdc" />
+				<http:request method="GET" doc:name="Request" doc:id="4e2d7aa3-5897-4408-b8b7-dfb7c620d8cc" url="https://fakerapi.it/api/v1/books"/>
+				<ee:transform doc:name="Transform Message" doc:id="0c2712b8-fd7a-4298-bd0a-f896444c964d">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload ]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</route>
+			<route >
+				<logger level="INFO" doc:name="Logger" doc:id="bf0da7b5-f01a-4439-ab6c-40ad162b3596" />
+				<http:request method="GET" doc:name="Request" doc:id="ec539f86-eee2-4b0c-8365-ff3d6f1f0eb3" url="https://fakerapi.it/api/v1/persons"/>
+				<ee:transform doc:name="Transform Message" doc:id="dd47656b-8c9b-4647-85f9-0dffde36c45f">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload ]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</route>
+		</scatter-gather>
+		<logger level="DEBUG" doc:name="Logger" doc:id="754c2f83-a51d-4093-ab33-a1f0a0d005dc" message="#[payload]" category='"After thr scattergather"'/>
+		<ee:transform doc:name="Transform Message" doc:id="8823accd-df26-40b1-84a5-0a14d1eae9ca" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload pluck $.payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
